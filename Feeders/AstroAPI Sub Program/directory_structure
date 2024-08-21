@@ -1,33 +1,33 @@
 AstroAPI/
 │
-├── astroapi/
+#├── astroapi/
 │   ├── __init__.py                 # Package initialization
-│   ├── config.py                   # Configuration settings
-│   ├── models.py                   # Data models (e.g., NatalChart, TransitData)
-│   ├── services/
+│   #├── config.py                   # Configuration settings
+│   #├── models.py                   # Data models (e.g., NatalChart, TransitData)
+│   #├── services/
 │   │   ├── __init__.py
 │   │   ├── natal_service.py        # Service for generating natal charts
 │   │   ├── transit_service.py      # Service for processing transit data
 │   │   └── neo4j_service.py        # Service for interacting with Neo4j
-│   ├── controllers/
+│   #├── controllers/
 │   │   ├── __init__.py
 │   │   └── webhook_controller.py   # Webhook handler for incoming JSON payloads
-│   ├── scripts/
+│   #├── scripts/
 │   │   ├── __init__.py
 │   │   ├── pull_transits.py        # Script to pull daily transits
 │   │   └── update_neo4j.py         # Script to update Neo4j with new transit data
-│   └── utils.py                    # Utility functions (e.g., date handling, logging)
+│   #└── utils.py                    # Utility functions (e.g., date handling, logging)
 │
-├── swisseph/                       # Cloned Swiss Ephemeris repository (optional)
-│   └── ephe/                       # Ephemeris files directory
+#├── swisseph/                       # Cloned Swiss Ephemeris repository (optional)
+│   #└── ephe/                       # Ephemeris files directory
 │
-├── tests/                          # Unit and integration tests
+#├── tests/                          # Unit and integration tests
 │   ├── __init__.py
-│   ├── test_natal_service.py       # Tests for natal chart service
-│   ├── test_transit_service.py     # Tests for transit service
-│   └── test_webhook_controller.py  # Tests for webhook controller
+│   #├── test_natal_service.py       # Tests for natal chart service
+│   #├── test_transit_service.py     # Tests for transit service
+│   #└── test_webhook_controller.py  # Tests for webhook controller
 │
-├── requirements.txt                # Python dependencies
-├── README.md                       # Project documentation
-├── app.py                          # Entry point for running the Flask web server
-└── .gitignore                      # Git ignore file
+#├── requirements.txt                # Python dependencies
+#├── README.md                       # Project documentation
+#├── app.py                          # Entry point for running the Flask web server
+#└── .gitignore                      # Git ignore file
