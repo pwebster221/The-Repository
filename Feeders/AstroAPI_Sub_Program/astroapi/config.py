@@ -1,11 +1,15 @@
 import os
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Path to the Swiss Ephemeris files
+SWISSEPH_PATH = os.getenv("SWISSEPH_PATH", "/Users/dubtownraces/Documents/GitHub/The-Esoteric-Repository/Feeders/AstroAPI_Sub_Program/astroapi/swisseph/ephe")
 
 # Environment
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-
-# Swiss Ephemeris Path
-SWISSEPH_PATH = "/Users/dubtownraces/Documents/GitHub/The-Esoteric-Repository/Feeders/AstroAPI_Sub_Program/astroapi/swisseph/ephe"
 
 # Neo4j Configuration
 NEO4J_URI = "bolt://localhost:7687" if ENVIRONMENT == "development" else "bolt://production-db:7687"
