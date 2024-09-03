@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Path to the Swiss Ephemeris files
-SWISSEPH_PATH = os.getenv("SWISSEPH_PATH", "/Users/dubtownraces/Documents/GitHub/The-Esoteric-Repository/Feeders/AstroAPI_Sub_Program/astroapi/swisseph/ephe")
+SWISSEPH_PATH = os.getenv("SWISSEPH_PATH", "/Users/dubtownraces/Documents/GitHub/The-Esoteric-Repository/Feeders/AstroAPI/swisseph/ephe")
 
 # Environment
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
