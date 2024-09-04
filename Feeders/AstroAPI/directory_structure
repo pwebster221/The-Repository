@@ -1,0 +1,215 @@
+AstroAPI/
+│
+├── astroapi/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── models.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── natal_service.py
+│   │   ├── transit_service.py
+│   │   ├── aspect_service.py
+│   │   ├── swiss_ephemeris_service.py
+│   │   └── neo4j_service.py
+│   ├── controllers/
+│   │   ├── __init__.py
+│   │   └── webhook_controller.py
+│   ├── templates/
+│   │   ├── natal_form.html
+│   │   └── transit_form.html
+│   ├── static/                  # For CSS, JavaScript, images, etc. (optional)
+│   └── utils.py
+│
+├── jupyter_notebooks/
+│   ├── natal_charts.ipynb
+│   ├── consolodation_program.ipynb
+│   ├── swiss_ephemerisc_code.ipynb
+│   └── transiting_planets.ipynb
+│
+├── swisseph/
+│   └── ephe/                     # Contains all Swiss Ephemeris data files
+│
+├── scripts/
+│   ├── __init__.py
+│   ├── pull_transits.py
+│   └── update_neo4j.py
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_natal_service.py
+│   ├── test_transit_service.py
+│   ├── test_aspect_service.py
+│   ├── test_swiss_ephemeris_service.py
+│   ├── test_webhook_controller.py
+│   └── test_neo4j_service.py
+│
+├── requirements.txt
+├── README.md
+├── app.py
+├── .env.example
+└── venv/
+
+
+Detailed Breakdown of Each File
+
+Root Directory
+
+	•	README.md:
+		•	Provides an overview of the project, setup instructions, usage examples, and details about the functionality.
+	•	requirements.txt:
+		•	Lists all Python dependencies needed for the project, including Flask, PySwissEphemeris, geopy, and Neo4j Python driver.
+	•	app.py:
+		•	The entry point for running the Flask web server.
+		•	Initializes the Flask application, sets up routes, and starts the server.
+	•	.env.example:
+		•	A template for environment-specific configurations. Users can copy this file to .env and fill in their own details.
+	
+astroapi/ Directory
+
+	•	__init__.py:
+		•	Initializes the astroapi package. Can be used to set up package-level configurations.
+	•	config.py:
+		•	Contains configuration settings for the application, including:
+		•	Path to Swiss Ephemeris files.
+		•	Neo4j connection details.
+		•	API keys and other environment-specific variables loaded from .env.
+		•	Example:
+	
+	import os
+	from dotenv import load_dotenv
+	
+	load_dotenv()
+	
+	SWISSEPH_PATH = os.getenv("SWISSEPH_PATH", "/path/to/AstroAPI/swisseph/ephe")
+	NEO4J_URI = os.getenv("NEO4J_URI")
+	NEO4J_USER = os.getenv("NEO4J_USER")
+	NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
+	
+	•	models.py:
+		•	Defines the data models for your application, such as NatalChart, TransitData, and AspectData.
+		•	These models represent the structure of the data being passed between services.
+		
+		services/ Directory
+		
+			•	__init__.py:
+				•	Initializes the services package.
+			•	natal_service.py:
+				•	Handles the logic for generating natal charts using the Swiss Ephemeris.
+				•	Example:
+		
+			from .swiss_ephemeris_service import SwissEphemerisService
+			
+			def generate_natal_chart(birth_data):
+				swe_service = SwissEphemerisService()
+				return swe_service.calculate_natal_chart(birth_data)
+				
+			•	transit_service.py:
+				•	Manages the logic for pulling daily transit data and preparing it for storage in Neo4j.
+			•	aspect_service.py:
+				•	Contains the logic for calculating astrological aspects between planets.
+				•	Utilizes planetary positions to determine conjunctions, squares, trines, etc.
+				•	Example:
+				
+			def calculate_aspects(planet_positions):
+				# Logic to calculate aspects
+				pass
+			
+			•	swiss_ephemeris_service.py:
+				•	Handles direct interactions with the Swiss Ephemeris library.
+				•	Contains methods for calculating planetary positions and generating ephemeris data.
+				•	Example:
+		
+		import swisseph as swe
+		from astroapi.config import SWISSEPH_PATH
+		
+		class SwissEphemerisService:
+			def __init__(self):
+				swe.set_ephe_path(SWISSEPH_PATH)
+				
+			def calculate_natal_chart(self, birth_data):
+				# Use Swiss Ephemeris to calculate planetary positions for a natal chart
+				pass
+				
+			def get_planetary_positions(self, date):
+				# Use Swiss Ephemeris to get planetary positions on a given date
+				pass
+		•	neo4j_service.py:
+			•	Manages interactions with the Neo4j database, including creating nodes and relationships for natal and transit data.
+			•	Example:
+		
+		from neo4j import GraphDatabase
+		
+		class Neo4jService:
+			def __init__(self, uri, user, password):
+				self.driver = GraphDatabase.driver(uri, auth=(user, password))
+				
+			def create_natal_chart(self, user_id, natal_data):
+				# Create nodes and relationships in Neo4j
+				pass
+				
+	controllers/ Directory
+	
+		•	__init__.py:
+			•	Initializes the controllers package.
+		•	webhook_controller.py:
+			•	Defines Flask routes for handling incoming webhook requests from Webflow forms.
+			•	Example:
+			
+			from flask import Flask, request, jsonify
+			from astroapi.services.natal_service import generate_natal_chart
+			from astroapi.services.transit_service import pull_transit_data
+			
+			app = Flask(__name__)
+			
+			@app.route('/generate-natal', methods=['POST'])
+			def generate_natal():
+				birth_data = request.form
+				natal_chart = generate_natal_chart(birth_data)
+				return jsonify(natal_chart), 200
+				
+			@app.route('/pull-transit', methods=['POST'])
+			def pull_transit():
+				birth_data = request.form
+				transit_data = pull_transit_data(birth_data)
+				return jsonify(transit_data), 200
+			
+			
+	templates/ Directory
+	
+		•	natal_form.html:
+			•	HTML form template for collecting birth data and generating a natal chart.
+		•	transit_form.html:
+			•	HTML form template for collecting birth data to pull daily transit data.
+		
+	static/ Directory (Optional)
+	
+		•	static/:
+			•	Directory for storing static assets like CSS, JavaScript, and images.
+	
+swisseph/ Directory
+
+	•	ephe/:
+		•	Contains the ephemeris files needed by the Swiss Ephemeris to perform calculations.
+	
+scripts/ Directory
+
+	•	pull_transits.py:
+		•	A standalone script for pulling daily transit data and processing it.
+	•	update_neo4j.py:
+		•	A script to update the Neo4j database with new transit data.
+	
+tests/ Directory
+
+	•	test_natal_service.py:
+		•	Unit tests for the natal_service.py.
+	•	test_transit_service.py:
+		•	Unit tests for the transit_service.py.
+	•	test_aspect_service.py:
+		•	Unit tests for the aspect_service.py.
+	•	test_swiss_ephemeris_service.py:
+		•	Unit tests for the swiss_ephemeris_service.py.
+	•	test_webhook_controller.py:
+		•	Tests for the webhook controller, ensuring it correctly handles incoming requests and returns the expected responses.
+	•	test_neo4j_service.py:
+		•	Unit tests for the neo4j_service.py, ensuring correct interaction with the Neo4j database.
+	
