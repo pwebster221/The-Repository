@@ -1,79 +1,55 @@
-# part one, query planetary positions for date of birth based on user input
+# convert to sign/degree
 
-import swisseph as swe
-from datetime import datetime
-from astroapi.config import SWISSEPH_PATH
-from geopy.geocoders import Nominatim
+def convert_to_sign_and_degree(longitude):
+    signs = [
+        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    ]
 
-# Set the path to the Swiss Ephemeris files
-swe.set_ephe_path(SWISSEPH_PATH)
+    # Determine the sign and degree within the sign
+    sign_index = int(longitude // 30)
+    sign = signs[sign_index]
+    degree = longitude % 30
+    
+    return sign, degree
 
-# Function to get the position of a planet on a given date and time
-def get_planet_position(julian_day, planet):
-	# Calculate the position of the planet
-	planet_position = swe.calc_ut(julian_day, planet)
-	longitude, latitude, distance, speed_longitude, speed_latitude, speed_distance = planet_position
-	
-	return {
-		"longitude": longitude,
-		"latitude": latitude,
-		"distance": distance,
-		"speed_longitude": speed_longitude
-	}
-	
-# Function to get positions for a list of planets
-def get_positions_for_date(julian_day, planets):
-	positions = {}
-	for planet in planets:
-		positions[swe.get_planet_name(planet)] = get_planet_position(julian_day, planet)
-	return positions
+def display_planetary_positions(positions):
+    for planet_name, (longitude, latitude, distance) in positions.items():
+        sign, degree = convert_to_sign_and_degree(longitude)
+        print(f"{planet_name} - {sign} {degree:.2f}° | Longitude: {longitude:.6f}°, Latitude: {latitude:.6f}°, Distance: {distance:.6f} AU")
 
-# Function to convert user input into a Julian day number
-def convert_to_julian_day(year, month, day, hour, minute, latitude, longitude, timezone):
-	# Adjust the time by the timezone offset
-	utc_hour = hour - timezone
-	# Calculate Julian day
-	julian_day = swe.julday(year, month, day, utc_hour + minute / 60)
-	return julian_day
+# display results
 
-# Function to get latitude and longitude from location name
-def get_lat_lon(location_name):
-	geolocator = Nominatim(user_agent="astroapi")
-	location = geolocator.geocode(location_name)
-	if location:
-		return location.latitude, location.longitude
-	else:
-		raise ValueError("Location not found")
-		
-# Example usage
+def display_aspects(positions, aspect_results):
+    for aspect in aspect_results:
+        planet1 = aspect['planet1']
+        planet2 = aspect['planet2']
+        sign1, degree1 = convert_to_sign_and_degree(positions[planet1][0])
+        sign2, degree2 = convert_to_sign_and_degree(positions[planet2][0])
+        
+        print(f"{planet1}")
+        print(f"\t{sign1} {degree1:.2f}°")
+        print(f"{planet2}")
+        print(f"\t{sign2} {degree2:.2f}°")
+        print(f"{aspect['aspect']} ({planet1} -> {planet2})")
+        print(f"\torb: {aspect['orb']:.2f}°")
+        print(f"\t{aspect['applying'].capitalize()}")
+        print()
+
+# bringing single date/location together
+
+def main():
+    # Step 1: Get user input
+    year, month, day, hour, minute, latitude, longitude = get_user_input()
+
+    # Step 2: Query planetary positions
+    positions = query_planetary_positions(year, month, day, hour, minute, latitude, longitude)
+
+    # Step 3: Calculate aspects between the planets
+    aspects = calculate_aspects(positions)
+
+    # Step 4: Display the aspects and their details
+    display_aspects(positions, aspects)
+
 if __name__ == "__main__":
-	# Get user input for date, time, and location
-	date_input = input("Enter date (YYYY-MM-DD): ")
-	time_input = input("Enter time (HH:MM in 24-hour format): ")
-	location_input = input("Enter location (city, country): ")
-	timezone_input = float(input("Enter time zone offset from UTC (e.g., -5 for EST): "))
-	
-	# Parse date and time
-	year, month, day = map(int, date_input.split('-'))
-	hour, minute = map(int, time_input.split(':'))
-	
-	# Get latitude and longitude for the location
-	try:
-		latitude, longitude = get_lat_lon(location_input)
-	except ValueError as e:
-		print(e)
-		exit()
-		
-	# Convert to Julian day
-	julian_day = convert_to_julian_day(year, month, day, hour, minute, latitude, longitude, timezone_input)
-	
-	# List of planets to query (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto)
-	planets = [swe.SUN, swe.MOON, swe.MERCURY, swe.VENUS, swe.MARS,
-				swe.JUPITER, swe.SATURN, swe.URANUS, swe.NEPTUNE, swe.PLUTO]
-	
-	# Get positions for the given date and time
-	planet_positions = get_positions_for_date(julian_day, planets)
-	
-	# Print the results
-	for planet_name, position in planet_positions.items():
-		print(f"{planet_name}: {position['longitude']}° longitude, {position['speed_longitude']}°/day speed")
+    main()
