@@ -23,7 +23,8 @@
 
 ## Feeder Programs:
         1. Swiss Ephemeris-based Transit and Natal Chart Production
-
+        2. Daily Tarot Reading Blog
+        3. Daily Transit Report Queru
 
 ## Key Principles:
         1. Respect for diverse spiritual paths and experiences.
